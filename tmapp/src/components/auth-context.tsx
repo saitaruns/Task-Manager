@@ -30,19 +30,18 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
 
   useEffect(() => {
     const tk = localStorage.getItem("token");
-    if (PUBLIC_ROUTES.includes(pathname)) {
-      if (tk) {
+    if (tk) {
+      if (PUBLIC_ROUTES.includes(pathname)) {
         handleSetToken(tk);
         router.push("/");
       } else {
         setLoading(false);
       }
     } else {
-      if (!tk) {
-        router.push("/login");
-      } else {
-        handleSetToken(tk);
+      if (PUBLIC_ROUTES.includes(pathname)) {
         setLoading(false);
+      } else {
+        router.push("/login");
       }
     }
   }, [handleSetToken, pathname, router]);

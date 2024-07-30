@@ -8,4 +8,14 @@ const instance: AxiosInstance = axios.create({
   },
 });
 
+instance.interceptors.request.use(
+  (config) => {
+    config.headers.Authorization = `Bearer ${typeof localStorage !== "undefined" ? localStorage.getItem("token") : ""}`;
+    return config;
+  },
+  (error) => {
+    return Promise.reject(error);
+  }
+);
+
 export default instance;
