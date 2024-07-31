@@ -24,7 +24,7 @@ const fetchTodoList: () => Promise<Task[]> = async () => {
 
 const Dashboard: React.FC = () => {
   const [query, setQuery] = useState("");
-  const { isLoading, isError, data, error } = useQuery({
+  const { isLoading, data } = useQuery({
     queryKey: ["tasks"],
     queryFn: fetchTodoList,
     placeholderData: keepPreviousData,

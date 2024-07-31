@@ -10,7 +10,7 @@ import {
   Trash,
 } from "lucide-react";
 import { Task } from "./task-column";
-import { useFieldArray, useForm, useFormContext } from "react-hook-form";
+import { useFieldArray, useForm } from "react-hook-form";
 import { Button } from "./ui/button";
 import { Input } from "./ui/input";
 import {
@@ -59,17 +59,29 @@ interface TaskFormProps {
 }
 
 const formSchema = z.object({
-  title: z.string().min(3, {
-    message: "Title must be at least 3 characters.",
-  }),
+  title: z
+    .string()
+    .min(3, {
+      message: "Title must be at least 3 characters.",
+    })
+    .max(50, {
+      message: "Title must be at most 50 characters.",
+    }),
   properties: z.array(
     z.object({
-      name: z.string().min(3, {
-        message: "Name must be at least 3 characters.",
+      name: z
+        .string()
+        .min(3, {
+          message: "Name must be at least 3 characters.",
+        })
+        .max(30, {
+          message: "Name must be at most 30 characters.",
+        }),
+      value: z.string().max(50, {
+        message: "Value must be at most 50 characters.",
       }),
-      value: z.string(),
-      type: z.string(),
-      isDefault: z.boolean(),
+      type: z.string().optional(),
+      isDefault: z.boolean().optional(),
     })
   ),
 });
@@ -266,16 +278,18 @@ const AddTaskForm = ({
                 <FormField
                   name={`properties.${index}.name`}
                   render={({ field }) => (
-                    <FormItem className="flex-1 flex gap-5 items-center text-[#666666]">
-                      {iconMap?.[name] || <CirclePlus size={20} />}
-                      <FormControl>
-                        <Input
-                          {...field}
-                          disabled={isDefault}
-                          className="border-none shadow-none focus-visible:ring-0"
-                          placeholder="Name"
-                        />
-                      </FormControl>
+                    <FormItem className="flex-1  text-[#666666]">
+                      <div className="flex gap-5 items-center">
+                        {iconMap?.[name] || <CirclePlus size={20} />}
+                        <FormControl>
+                          <Input
+                            {...field}
+                            disabled={isDefault}
+                            className="border-none shadow-none focus-visible:ring-0"
+                            placeholder="Name"
+                          />
+                        </FormControl>
+                      </div>
                       <FormMessage />
                     </FormItem>
                   )}

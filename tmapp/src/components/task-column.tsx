@@ -29,7 +29,7 @@ const TaskColumn: React.FC<TaskColumnProps> = ({ status, tasks }) => {
     <Droppable droppableId={status}>
       {(provided) => (
         <div
-          className="flex flex-1 flex-col"
+          className="flex flex-1 w-1/4 flex-col"
           {...provided.droppableProps}
           ref={provided.innerRef}
         >

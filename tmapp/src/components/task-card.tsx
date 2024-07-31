@@ -41,11 +41,13 @@ const TaskCard: React.FC<
           <DeleteButton id={_id} />
           <div>
             <TaskSheet task={task}>
-              <h3 className="text-md text-[#606060] font-[500] hover:underline">
+              <h3 className="text-md text-[#606060] font-[500] break-words hover:underline line-clamp-2">
                 {title}
               </h3>
             </TaskSheet>
-            <p className="text-[#797979] text-sm">{description}</p>
+            <p className="text-[#797979] text-sm line-clamp-3 break-words">
+              {description}
+            </p>
           </div>
           <div
             className={cn(
@@ -114,7 +116,7 @@ const DeleteButton = ({ id }: { id: string }) => {
     <ConfirmDialog confirm={() => mutation.mutate(id)}>
       <Button
         variant="ghost"
-        className="absolute p-0 hover:bg-inherit bg-[#F9F9F9] top-2 hidden group-hover:inline-flex right-2 text-[#606060] font-[400] text-sm"
+        className="absolute p-0 hover:bg-inherit active:text-red-400 bg-[#F9F9F9] top-2 hidden group-hover:inline-flex right-2 text-[#606060] font-[400] text-sm"
         disabled={mutation.isPending}
       >
         <Trash size={20} />
