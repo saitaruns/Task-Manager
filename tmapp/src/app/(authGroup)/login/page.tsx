@@ -38,6 +38,10 @@ const formSchema = z.object({
 const Login: React.FC = () => {
   const form = useForm<LoginFormInput>({
     resolver: zodResolver(formSchema),
+    defaultValues: {
+      email: "admin@workflo.com",
+      password: "admin@123",
+    },
   });
 
   const [showPassword, setShowPassword] = useState(false);

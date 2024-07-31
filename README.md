@@ -38,6 +38,8 @@ To get started with Task Manager, follow these steps:
 
 Once the application is up and running, you can access it through your web browser. Here are some key actions you can perform:
 
+- Test credentials ( email: admin@workflo.com, password: admin@123 ) are set by default in the login page.
+- Directly login with them. Or you may create a new account from the SignUp page.
 - Create a new task by clicking on the "Create Task" button.
 - Set due dates and priorities for tasks to manage your workload effectively.
 - Use the dashboard to track the progress of tasks and identify bottlenecks.
