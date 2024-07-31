@@ -31,7 +31,7 @@ const Sidebar: React.FC = () => {
     <div className="w-4/12 min-h-screen p-4 flex flex-col gap-5 border-r bg-white">
       <div className="flex items-center gap-2">
         <div className="bg-gray-600 size-8 rounded-md"></div>
-        <span className="">{user.isFetched ? user.data.name : ""}</span>
+        <span className="">{user?.isFetched ? user?.data?.name : ""}</span>
       </div>
       <div className="flex justify-between">
         <div className="flex items-center gap-3 text-[#666666]">

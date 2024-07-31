@@ -34,7 +34,7 @@ const Header: React.FC = () => {
     <header className="flex flex-col py-4">
       <div className="flex justify-between">
         <h1 className="text-4xl font-bold font-barlow">
-          Good morning, {user.isFetched ? user.data.name : ""}
+          Good morning, {user?.isFetched ? user.data?.name : ""}
         </h1>
         <Link
           className="text-sm flex text-[#080808] font-[400] items-center gap-2"
