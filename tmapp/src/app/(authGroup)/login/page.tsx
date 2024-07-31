@@ -12,13 +12,14 @@ import {
 import { Input } from "@/components/ui/input";
 import instance from "@/lib/request";
 import { useMutation } from "@tanstack/react-query";
-import React, { useContext } from "react";
+import React, { useContext, useState } from "react";
 import { useForm, SubmitHandler } from "react-hook-form";
 import { toast } from "sonner";
 import * as z from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
+import { Eye, EyeOff } from "lucide-react";
 
 interface IFormInput {
   email: string;
@@ -39,6 +40,8 @@ const Login: React.FC = () => {
     resolver: zodResolver(formSchema),
   });
 
+  const [showPassword, setShowPassword] = useState(false);
+
   const router = useRouter();
 
   const {
@@ -49,12 +52,13 @@ const Login: React.FC = () => {
   const { handleSetToken } = useContext(AuthContext);
 
   const mutation = useMutation({
-    mutationFn: (formData: { email: string; password: string }) => {
-      return instance.post("/auth/login", formData);
+    mutationFn: async (formData: { email: string; password: string }) => {
+      const response = await instance.post("/auth/login", formData);
+      return response.data;
     },
     onSuccess: (data) => {
       toast.success("Login successful");
-      handleSetToken(data.data.token);
+      handleSetToken(data.token);
       router.push("/");
     },
     onError: (error) => {
@@ -67,16 +71,18 @@ const Login: React.FC = () => {
     mutation.mutate(data);
   };
 
+  const handleEye = () => setShowPassword(!showPassword);
+
   return (
     <div className="min-h-screen flex items-center justify-center bg-gradient-to-b from-[#FFFFFF] from-0% to-[#AFA3FF] to-100%">
-      <div className="bg-gradient-to-b from-[#F7F7F7] from-0% to-[#F0F0F0] to-100% p-6 rounded-lg border border-[#CECECE] w-full max-w-sm">
-        <h1 className="text-2xl font-bold mb-6 text-center">
+      <div className="flex flex-col gap-7 bg-gradient-to-b from-[#F7F7F7] from-0% to-[#F0F0F0] to-100% py-14 px-12 rounded-xl border border-[#CECECE] w-full max-w-lg">
+        <h1 className="text-4xl font-semibold text-center">
           Welcome to <span className="text-[#4534AC]">Workflo</span>!
         </h1>
         <Form {...form}>
           <form
             onSubmit={handleSubmit(onSubmit)}
-            className="flex flex-col gap-3"
+            className="flex flex-col gap-4"
           >
             <FormField
               control={form.control}
@@ -87,7 +93,7 @@ const Login: React.FC = () => {
                     <Input
                       placeholder="Email"
                       {...field}
-                      className="bg-[#EBEBEB] text-[#606060] border-none shadow-none focus-visible:ring-0"
+                      className="bg-[#EBEBEB] text-[#606060] border-transparent focus:border-[#999999] shadow-none focus-visible:ring-0 p-5"
                     />
                   </FormControl>
                   <FormMessage />
@@ -98,14 +104,31 @@ const Login: React.FC = () => {
               control={form.control}
               name="password"
               render={({ field }) => (
-                <FormItem>
+                <FormItem className="bg-[#EBEBEB] rounded-md flex items-center pr-2 border focus-within:border-[#999999]">
                   <FormControl>
-                    <Input
-                      placeholder="Password"
-                      type="password"
-                      {...field}
-                      className="bg-[#EBEBEB] text-[#606060] border-none shadow-none focus-visible:ring-0"
-                    />
+                    <>
+                      <Input
+                        placeholder="Password"
+                        type={showPassword ? "text" : "password"}
+                        {...field}
+                        className="bg-[#EBEBEB] text-[#606060] border-transparent shadow-none focus-visible:ring-0 p-5"
+                      />
+                      {showPassword ? (
+                        <EyeOff
+                          strokeWidth={1.5}
+                          onClick={handleEye}
+                          size={20}
+                          className="cursor-pointer text-[#999999]"
+                        />
+                      ) : (
+                        <Eye
+                          strokeWidth={1.5}
+                          size={20}
+                          onClick={handleEye}
+                          className="cursor-pointer text-[#999999]"
+                        />
+                      )}
+                    </>
                   </FormControl>
                   <FormMessage />
                 </FormItem>
@@ -118,15 +141,15 @@ const Login: React.FC = () => {
             >
               Login
             </Button>
-            <div className="text-sm mx-auto">
-              <span className="text-[#606060]">
-                Don&apos;t have an account? Create a{" "}
-              </span>
-              <Link href="/signup" className="text-[#0054A1]">
-                new account
-              </Link>
-            </div>
           </form>
+          <div className="text-sm mx-auto">
+            <span className="text-[#606060]">
+              Don&apos;t have an account? Create a{" "}
+            </span>
+            <Link href="/signup" className="text-[#0054A1]">
+              new account
+            </Link>
+          </div>
         </Form>
       </div>
     </div>

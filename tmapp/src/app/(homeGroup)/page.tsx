@@ -79,12 +79,15 @@ const Dashboard: React.FC = () => {
     data?.filter((task) => task.status === "finished") || [];
 
   const handleDrag = async (result: any) => {
-    console.log(result);
     if (!result.destination) {
       return;
     }
 
     const { source, destination, draggableId } = result;
+
+    if (source.droppableId === destination.droppableId) {
+      return;
+    }
 
     const updatedTask = {
       ...data?.find((task) => task._id === draggableId),
@@ -105,50 +108,10 @@ const Dashboard: React.FC = () => {
         <MenuBar query={query} setQuery={setQuery} />
         <DragDropContext onDragEnd={handleDrag}>
           <div className="flex mt-3 py-3 px-3 gap-3 bg-white rounded-md">
-            <Droppable droppableId="todo">
-              {(provided) => (
-                <div
-                  className="flex-1 flex gap-3"
-                  {...provided.droppableProps}
-                  ref={provided.innerRef}
-                >
-                  <TaskColumn status="todo" tasks={todoTasks} />
-                </div>
-              )}
-            </Droppable>
-            <Droppable droppableId="progress">
-              {(provided) => (
-                <div
-                  className="flex-1 flex gap-3"
-                  {...provided.droppableProps}
-                  ref={provided.innerRef}
-                >
-                  <TaskColumn status="progress" tasks={inProgressTasks} />
-                </div>
-              )}
-            </Droppable>
-            <Droppable droppableId="review">
-              {(provided) => (
-                <div
-                  className="flex-1 flex gap-3"
-                  {...provided.droppableProps}
-                  ref={provided.innerRef}
-                >
-                  <TaskColumn status="review" tasks={underReviewTasks} />
-                </div>
-              )}
-            </Droppable>
-            <Droppable droppableId="finished">
-              {(provided) => (
-                <div
-                  className="flex-1 flex gap-3"
-                  {...provided.droppableProps}
-                  ref={provided.innerRef}
-                >
-                  <TaskColumn status="finished" tasks={finishedTasks} />
-                </div>
-              )}
-            </Droppable>
+            <TaskColumn status="todo" tasks={todoTasks} />
+            <TaskColumn status="progress" tasks={inProgressTasks} />
+            <TaskColumn status="review" tasks={underReviewTasks} />
+            <TaskColumn status="finished" tasks={finishedTasks} />
           </div>
         </DragDropContext>
       </div>

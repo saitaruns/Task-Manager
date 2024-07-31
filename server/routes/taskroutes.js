@@ -3,7 +3,6 @@ const router = express.Router();
 const Task = require("../db/models/Task");
 const authMiddleware = require("../middleware");
 
-// Get a single product by ID
 router.get("/", authMiddleware, async (req, res) => {
   try {
     const tasks = await Task.find({ author: req.user._id });
@@ -33,6 +32,7 @@ router.delete("/:id", authMiddleware, async (req, res) => {
   try {
     const task = await Task.findOneAndDelete({
       _id: req.params.id,
+      author: req.user._id,
     });
     if (!task) {
       return res.status(404).json({ error: "Task not found" });
@@ -49,6 +49,7 @@ router.patch("/:id", authMiddleware, async (req, res) => {
     const task = await Task.findOneAndUpdate(
       {
         _id: req.params.id,
+        author: req.user._id,
       },
       req.body,
       {

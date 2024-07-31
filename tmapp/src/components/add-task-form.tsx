@@ -3,16 +3,14 @@
 import {
   CalendarIcon,
   CirclePlus,
-  Delete,
   Loader,
   MessageSquareWarning,
   Pencil,
   Plus,
-  Star,
   Trash,
 } from "lucide-react";
 import { Task, title } from "./task-column";
-import { useFieldArray, useForm } from "react-hook-form";
+import { useFieldArray, useForm, useFormContext } from "react-hook-form";
 import { Button } from "./ui/button";
 import { Input } from "./ui/input";
 import {
@@ -28,8 +26,11 @@ import { Popover, PopoverContent, PopoverTrigger } from "./ui/popover";
 import { format } from "date-fns";
 import { cn } from "@/lib/utils";
 import { Calendar } from "./ui/calendar";
-import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { toast } from "sonner";
+import FileDrop from "./dropzone";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { z } from "zod";
 
 const statusOptions = ["todo", "progress", "review", "finished"];
 const priorityOptions = ["Low", "Medium", "Urgent"];
@@ -40,12 +41,10 @@ const optionsMap: { [key: string]: string[] } = {
 };
 
 const iconMap: { [key: string]: React.ReactNode } = {
-  Status: <Loader size={16} className="text-muted-foreground" />,
-  Priority: (
-    <MessageSquareWarning size={16} className="text-muted-foreground" />
-  ),
-  Deadline: <CalendarIcon size={16} className="text-muted-foreground" />,
-  Description: <Pencil size={16} className="text-muted-foreground" />,
+  Status: <Loader size={20} />,
+  Priority: <MessageSquareWarning size={20} />,
+  Deadline: <CalendarIcon size={20} />,
+  Description: <Pencil size={20} />,
 };
 
 interface TaskFormProps {
@@ -57,6 +56,22 @@ interface TaskFormProps {
     isDefault: boolean;
   }[];
 }
+
+const formSchema = z.object({
+  title: z.string().min(3, {
+    message: "Title must be at least 3 characters.",
+  }),
+  properties: z.array(
+    z.object({
+      name: z.string().min(3, {
+        message: "Name must be at least 3 characters.",
+      }),
+      value: z.string(),
+      type: z.string(),
+      isDefault: z.boolean(),
+    })
+  ),
+});
 
 const AddTaskForm = ({
   status,
@@ -101,11 +116,15 @@ const AddTaskForm = ({
         })) || []),
       ],
     },
+    resolver: zodResolver(formSchema),
   });
 
   const isUpdate = !!task;
 
-  const { handleSubmit } = form;
+  const {
+    handleSubmit,
+    formState: { errors },
+  } = form;
 
   const formatData = (data: TaskFormProps) => {
     const formattedData: { [key: string]: string | Object } = data.properties
@@ -155,7 +174,7 @@ const AddTaskForm = ({
       return postTask(formData);
     },
     onSuccess: (data: Task) => {
-      toast.success("Task created successfully");
+      toast.success(`Task ${isUpdate ? "updated" : "created"} successfully!`);
       queryClient.setQueryData<Task[]>(["tasks"], (prev) => {
         const newTasks = [...(prev || [])];
         const index = newTasks.findIndex((t) => t._id === task?._id);
@@ -186,9 +205,38 @@ const AddTaskForm = ({
     mutation.mutate(data);
   };
 
+  const handleFileDrop = (files: string) => {
+    let json = {};
+    try {
+      json = JSON.parse(files);
+    } catch (e) {
+      toast.error("Invalid JSON file");
+      return;
+    }
+    console.log(
+      "check",
+      Object.values(json).every((v) => typeof v === "string")
+    );
+    if (
+      !Array.isArray(json) &&
+      !Object.values(json).every((v) => typeof v === "string")
+    ) {
+      toast.error("Invalid JSON format");
+      return;
+    }
+    Object.entries(json).forEach(([key, value]) => {
+      append({
+        name: key,
+        value: value as string,
+        type: "text",
+        isDefault: false,
+      });
+    });
+  };
+
   return (
     <Form {...form}>
-      <form onSubmit={handleSubmit(onSubmit)} className="flex flex-col gap-2">
+      <form onSubmit={handleSubmit(onSubmit)} className="flex flex-col gap-3">
         <FormField
           name="title"
           render={({ field }) => (
@@ -209,15 +257,16 @@ const AddTaskForm = ({
           const type = field.type || "text";
           const name = field.name || "New Field";
           return (
-            <div key={field.id} className="flex gap-2 [&>*]:flex-1">
+            <div
+              key={field.id}
+              className="flex gap-2 items-center [&>*]:flex-1"
+            >
               <div className="flex gap-2 items-center">
-                {iconMap?.[name] || (
-                  <CirclePlus size={16} className="text-muted-foreground" />
-                )}
                 <FormField
                   name={`properties.${index}.name`}
                   render={({ field }) => (
-                    <FormItem className="flex-1">
+                    <FormItem className="flex-1 flex gap-5 items-center text-[#666666]">
+                      {iconMap?.[name] || <CirclePlus size={20} />}
                       <FormControl>
                         <Input
                           {...field}
@@ -251,7 +300,7 @@ const AddTaskForm = ({
                                 <Button
                                   variant={"outline"}
                                   className={cn(
-                                    "w-full pl-3 text-left font-normal",
+                                    "w-full pl-3 text-left font-normal border-none shadow-none",
                                     !field.value && "text-muted-foreground"
                                   )}
                                 >
@@ -274,7 +323,7 @@ const AddTaskForm = ({
                                 onSelect={(date) => {
                                   field.onChange(date?.toISOString());
                                 }}
-                                disabled={(date) => date < new Date()}
+                                fromDate={new Date()}
                                 initialFocus
                               />
                             </PopoverContent>
@@ -327,17 +376,19 @@ const AddTaskForm = ({
           }
           type="button"
           variant={"ghost"}
-          className="justify-start p-0 gap-5 hover:bg-white text-muted-foreground"
+          className="justify-start p-0 gap-5 hover:bg-white font-[400]"
         >
           <Plus size={16} />
-          Add Custom Property
+          <span className="px-3 py-2">Add Custom Property</span>
         </Button>
+        <hr className="border-[#E5E5E5] mt-2" />
+        <FileDrop onFileDrop={handleFileDrop} />
         <Button
           type="submit"
           disabled={mutation.isPending || mutation.isSuccess}
           variant="shadsecondary"
         >
-          Submit
+          {isUpdate ? "Update Task" : "Create Task"}
         </Button>
       </form>
     </Form>

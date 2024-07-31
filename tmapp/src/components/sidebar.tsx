@@ -5,7 +5,7 @@ import { Button, buttonVariants } from "./ui/button";
 import Link from "next/link";
 import { BellDot, ChevronsRight, Loader } from "lucide-react";
 import { cn } from "@/lib/utils";
-import { useRouter } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
 import TaskSheet from "./task-sheet";
 import HomeSVG from "../../public/home.svg";
 import BoardsSVG from "../../public/boards.svg";
@@ -14,9 +14,13 @@ import TeamSVG from "../../public/teams.svg";
 import AnalyticsSVG from "../../public/analytics.svg";
 import Image from "next/image";
 import SolidPlusSVG from "../../public/solidplus.svg";
+import useAuth from "@/lib/hooks/useAuth";
 
 const Sidebar: React.FC = () => {
   const router = useRouter();
+  const pathname = usePathname();
+
+  const user = useAuth();
 
   const handleLogout = () => {
     localStorage.removeItem("token");
@@ -24,10 +28,10 @@ const Sidebar: React.FC = () => {
   };
 
   return (
-    <div className="w-5/12 min-h-screen p-4 flex flex-col gap-5 border-r bg-white">
+    <div className="w-4/12 min-h-screen p-4 flex flex-col gap-5 border-r bg-white">
       <div className="flex items-center gap-2">
         <div className="bg-gray-600 size-8 rounded-md"></div>
-        <span className="">Joe Gardner</span>
+        <span className="">{user.isFetched ? user.data.name : ""}</span>
       </div>
       <div className="flex justify-between">
         <div className="flex items-center gap-3 text-[#666666]">
@@ -48,11 +52,12 @@ const Sidebar: React.FC = () => {
         </Button>
       </div>
       <nav className="flex-grow">
-        <ul className="">
+        <ul className="space-y-1">
           {[
             {
               name: "Home",
               icon: HomeSVG,
+              route: "/",
             },
             {
               name: "Boards",
@@ -71,14 +76,17 @@ const Sidebar: React.FC = () => {
               icon: AnalyticsSVG,
             },
           ].map((item) => (
-            <li className="" key={item.name}>
+            <li key={item.name}>
               <Link
                 href="#"
                 className={cn(
                   buttonVariants({
                     variant: "ghost",
                   }),
-                  "p-2 text-[#797979] flex justify-start gap-2 border border-transparent hover:border hover:border-[#DDDDDD] hover:bg-[#F4F4F4]"
+                  "p-2 text-[#797979] flex justify-start gap-3 border border-transparent hover:border hover:border-[#DDDDDD] hover:bg-[#F4F4F4]",
+                  {
+                    "border-[#DDDDDD] bg-[#F4F4F4]": pathname === item?.route,
+                  }
                 )}
               >
                 <Image src={item.icon} alt={item.name} width={24} height={24} />
@@ -88,7 +96,10 @@ const Sidebar: React.FC = () => {
           ))}
         </ul>
         <TaskSheet>
-          <Button variant="shad" className="mt-4 gap-2 items-center">
+          <Button
+            variant="shad"
+            className="mt-4 w-full gap-2 items-center text-md font-[400] py-5"
+          >
             <span>Create new task</span>
             <Image
               src={SolidPlusSVG}

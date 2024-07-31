@@ -1,4 +1,5 @@
 import type { Config } from "tailwindcss"
+import { fontFamily } from "tailwindcss/defaultTheme"
 
 const config = {
   darkMode: ["class"],
@@ -80,6 +81,10 @@ const config = {
         "accordion-down": "accordion-down 0.2s ease-out",
         "accordion-up": "accordion-up 0.2s ease-out",
         ripple: "ripple var(--duration,2s) ease calc(var(--i, 0)*.2s) infinite",
+      },
+      fontFamily: {
+        inter: ['var(--font-inter)', ...fontFamily.sans],
+        barlow: ['var(--font-barlow-condensed)', ...fontFamily.sans],
       },
     },
   },

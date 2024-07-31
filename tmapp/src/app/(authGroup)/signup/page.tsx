@@ -1,87 +1,167 @@
 "use client";
 
 import { Button } from "@/components/ui/button";
+import {
+  Form,
+  FormControl,
+  FormField,
+  FormItem,
+  FormMessage,
+} from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
+import instance from "@/lib/request";
+import { cn } from "@/lib/utils";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { useMutation } from "@tanstack/react-query";
+import { Eye, EyeOff } from "lucide-react";
 import Link from "next/link";
-import React from "react";
+import { useRouter } from "next/navigation";
+import React, { useState } from "react";
 import { useForm, SubmitHandler } from "react-hook-form";
+import { toast } from "sonner";
+import { z } from "zod";
 
 interface IFormInput {
-  fullName: string;
+  name: string;
   email: string;
   password: string;
 }
 
+const formSchema = z.object({
+  name: z.string().min(3, {
+    message: "Full name must be at least 3 characters.",
+  }),
+  email: z.string().email({
+    message: "Invalid email address.",
+  }),
+  password: z.string().min(6, {
+    message: "Password must be at least 6 characters.",
+  }),
+});
+
 const Signup: React.FC = () => {
+  const form = useForm<IFormInput>({
+    resolver: zodResolver(formSchema),
+  });
+
+  const [showPassword, setShowPassword] = useState(false);
+
   const {
-    register,
     handleSubmit,
-    formState: { errors },
-  } = useForm<IFormInput>();
+    formState: { errors, isValid },
+  } = form;
+
+  const router = useRouter();
+
+  const mutation = useMutation({
+    mutationFn: (formData: IFormInput) => {
+      return instance.post("/auth/register", formData);
+    },
+    onSuccess: (data) => {
+      toast.success("Signed up successful");
+      router.push("/login");
+    },
+    onError: (error) => {
+      console.error(error);
+      toast.error("Invalid email or password");
+    },
+  });
 
   const onSubmit: SubmitHandler<IFormInput> = (data) => {
-    console.log(data);
+    mutation.mutate(data);
   };
+
+  const handleEye = () => setShowPassword(!showPassword);
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-gradient-to-b from-[#FFFFFF] from-0% to-[#AFA3FF] to-100%">
-      <div className="bg-white border border-[#CECECE] p-6 rounded-lg w-full max-w-sm bg-gradient-to-b from-[#F7F7F7] from-0% to-[#F0F0F0] to-100%">
-        <h1 className="text-2xl font-bold mb-6 text-center">
+      <div className=" bg-gradient-to-b from-[#F7F7F7] from-0% to-[#F0F0F0] to-100% border-[#CECECE] py-14 px-12 rounded-lg w-full max-w-lg">
+        <h1 className="text-4xl font-semibold mb-6 text-center">
           Welcome to <span className="text-[#4534AC]">Workflo</span>!
         </h1>
-        <form onSubmit={handleSubmit(onSubmit)}>
-          <div className="mb-4">
-            <Input
-              type="text"
-              id="fullName"
-              className={`w-full px-3 py-2 border rounded focus:outline-none border-none shadow-none focus-visible:ring-0 bg-[#EBEBEB] text-[#606060] ${
-                errors.fullName ? "border-red-500" : "border-gray-300"
-              } focus:border-[#4534AC]`}
-              placeholder="Full name"
-              {...register("fullName", { required: "Full name is required" })}
+        <Form {...form}>
+          <form
+            onSubmit={handleSubmit(onSubmit)}
+            className="flex flex-col gap-4"
+          >
+            <FormField
+              control={form.control}
+              name="name"
+              render={({ field }) => (
+                <FormItem>
+                  <FormControl>
+                    <Input
+                      type="text"
+                      {...field}
+                      className="bg-[#EBEBEB] text-[#606060] border-transparent focus:border-[#999999] shadow-none focus-visible:ring-0 p-5"
+                      placeholder="Full name"
+                    />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
             />
-            {errors.fullName && (
-              <p className="text-red-500 text-sm mt-1">
-                {errors.fullName.message}
-              </p>
-            )}
-          </div>
-          <div className="mb-4">
-            <Input
-              type="email"
-              id="email"
-              className={`w-full px-3 py-2 border rounded focus:outline-none border-none shadow-none focus-visible:ring-0 bg-[#EBEBEB] text-[#606060] ${
-                errors.email ? "border-red-500" : "border-gray-300"
-              } focus:border-[#4534AC]`}
-              placeholder="Your email"
-              {...register("email", { required: "Email is required" })}
+            <FormField
+              control={form.control}
+              name="email"
+              render={({ field }) => (
+                <FormItem>
+                  <FormControl>
+                    <Input
+                      type="email"
+                      {...field}
+                      className="bg-[#EBEBEB] text-[#606060] border-transparent focus:border-[#999999] shadow-none focus-visible:ring-0 p-5"
+                      placeholder="Your email"
+                    />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
             />
-            {errors.email && (
-              <p className="text-red-500 text-sm mt-1">
-                {errors.email.message}
-              </p>
-            )}
-          </div>
-          <div className="mb-6">
-            <Input
-              type="password"
-              id="password"
-              className={`w-full px-3 py-2 border rounded focus:outline-none border-none shadow-none focus-visible:ring-0 bg-[#EBEBEB] text-[#606060] ${
-                errors.password ? "border-red-500" : "border-gray-300"
-              } focus:border-[#4534AC]`}
-              placeholder="Password"
-              {...register("password", { required: "Password is required" })}
+            <FormField
+              control={form.control}
+              name="password"
+              render={({ field }) => (
+                <FormItem className="bg-[#EBEBEB] rounded-md flex items-center pr-2 border focus-within:border-[#999999]">
+                  <FormControl>
+                    <>
+                      <Input
+                        placeholder="Password"
+                        type={showPassword ? "text" : "password"}
+                        {...field}
+                        className="bg-[#EBEBEB] text-[#606060] border-transparent shadow-none focus-visible:ring-0 p-5"
+                      />
+                      {showPassword ? (
+                        <EyeOff
+                          strokeWidth={1.5}
+                          onClick={handleEye}
+                          size={20}
+                          className="cursor-pointer text-[#999999]"
+                        />
+                      ) : (
+                        <Eye
+                          strokeWidth={1.5}
+                          size={20}
+                          onClick={handleEye}
+                          className="cursor-pointer text-[#999999]"
+                        />
+                      )}
+                    </>
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
             />
-            {errors.password && (
-              <p className="text-red-500 text-sm mt-1">
-                {errors.password.message}
-              </p>
-            )}
-          </div>
-          <Button type="submit" className="w-full" variant="shad">
-            Sign up
-          </Button>
-        </form>
+            <Button
+              disabled={!isValid || mutation.isPending || mutation.isSuccess}
+              type="submit"
+              className="w-full"
+              variant="shad"
+            >
+              Sign up
+            </Button>
+          </form>
+        </Form>
         <p className="text-center text-[#606060] mt-4">
           Already have an account?{" "}
           <Link href="/login" className="text-[#4534AC] hover:underline">

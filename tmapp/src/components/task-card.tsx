@@ -1,16 +1,21 @@
 import React from "react";
-import { Badge } from "./ui/badge";
 import { Clock, Trash } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { Task } from "./task-column";
-import { formatDistanceToNowStrict } from "date-fns";
+import { format, formatDistanceToNowStrict } from "date-fns";
 import { Button } from "./ui/button";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import instance from "@/lib/request";
 import { toast } from "sonner";
 import TaskSheet from "./task-sheet";
+import ConfirmDialog from "./confirm-dialog";
+import { Draggable } from "react-beautiful-dnd";
 
-const TaskCard: React.FC<Task> = (task) => {
+const TaskCard: React.FC<
+  Task & {
+    idx: number;
+  }
+> = ({ idx, ...task }) => {
   const { _id, title, description, status, priority, deadline, updatedAt } =
     task;
   const priorityColors = {
@@ -20,36 +25,50 @@ const TaskCard: React.FC<Task> = (task) => {
   };
 
   return (
-    <div className="p-4 relative group rounded-lg border flex flex-col gap-2 bg-[#F9F9F9] border-[##DEDEDE]">
-      <DeleteButton id={_id} />
-      <div>
-        <TaskSheet task={task}>
-          <h3 className="text-md text-[#606060] font-[500] hover:underline">
-            {title}
-          </h3>
-        </TaskSheet>
-        <p className="text-[#797979] text-sm">{description}</p>
-      </div>
-      <div
-        className={cn(
-          priorityColors[priority],
-          "w-fit py-1 px-2 rounded-lg text-xs text-white"
-        )}
-      >
-        {priority}
-      </div>
-      <div className="flex flex-col gap-3">
-        <div className="text-sm mt-2 flex gap-2 items-center text-[#606060] font-semibold">
-          <Clock size={20} className="inline" />
-          {deadline}
+    <Draggable key={task._id} draggableId={task._id.toString()} index={idx}>
+      {(provided, snapshot) => (
+        <div
+          ref={provided.innerRef}
+          {...provided.draggableProps}
+          {...provided.dragHandleProps}
+          className={cn(
+            "p-4 relative group rounded-lg border flex flex-col gap-2 bg-[#F9F9F9] border-[##DEDEDE] transition-shadow",
+            {
+              "shadow-lg": snapshot.isDragging,
+            }
+          )}
+        >
+          <DeleteButton id={_id} />
+          <div>
+            <TaskSheet task={task}>
+              <h3 className="text-md text-[#606060] font-[500] hover:underline">
+                {title}
+              </h3>
+            </TaskSheet>
+            <p className="text-[#797979] text-sm">{description}</p>
+          </div>
+          <div
+            className={cn(
+              priorityColors[priority],
+              "w-fit py-1 px-2 rounded-lg text-xs text-white"
+            )}
+          >
+            {priority}
+          </div>
+          <div className="flex flex-col gap-3">
+            <div className="text-sm mt-2 flex gap-2 items-center text-[#606060] font-semibold">
+              <Clock size={20} className="inline" />
+              {format(new Date(deadline), "yyyy-MM-dd")}
+            </div>
+            <div className="text-sm font-[500] text-[#797979]">
+              {formatDistanceToNowStrict(new Date(updatedAt), {
+                addSuffix: true,
+              })}
+            </div>
+          </div>
         </div>
-        <div className="text-sm font-[500] text-[#797979]">
-          {formatDistanceToNowStrict(new Date(updatedAt), {
-            addSuffix: true,
-          })}
-        </div>
-      </div>
-    </div>
+      )}
+    </Draggable>
   );
 };
 
@@ -92,14 +111,15 @@ const DeleteButton = ({ id }: { id: string }) => {
   });
 
   return (
-    <Button
-      variant="ghost"
-      className="absolute top-2 hidden group-hover:inline-flex right-2 text-[#606060] font-[400] text-sm"
-      disabled={mutation.isPending}
-      onClick={() => mutation.mutate(id)}
-    >
-      <Trash size={20} />
-    </Button>
+    <ConfirmDialog confirm={() => mutation.mutate(id)}>
+      <Button
+        variant="ghost"
+        className="absolute p-0 hover:bg-inherit bg-[#F9F9F9] top-2 hidden group-hover:inline-flex right-2 text-[#606060] font-[400] text-sm"
+        disabled={mutation.isPending}
+      >
+        <Trash size={20} />
+      </Button>
+    </ConfirmDialog>
   );
 };
 
