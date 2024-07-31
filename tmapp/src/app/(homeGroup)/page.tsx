@@ -1,7 +1,10 @@
 "use client";
 
 import React, { useState } from "react";
-import TaskColumn, { Task } from "../../components/task-column";
+import TaskColumn, {
+  Task,
+  TaskColumnSkeleton,
+} from "../../components/task-column";
 import Header from "@/components/header";
 import Sidebar from "@/components/sidebar";
 import MenuBar from "@/components/menubar";
@@ -96,10 +99,6 @@ const Dashboard: React.FC = () => {
     updateMutation.mutate(updatedTask);
   };
 
-  if (isLoading) {
-    return <Loader />;
-  }
-
   return (
     <div className="flex bg-[#F7F7F7] pr-4">
       <Sidebar />
@@ -108,10 +107,27 @@ const Dashboard: React.FC = () => {
         <MenuBar query={query} setQuery={setQuery} />
         <DragDropContext onDragEnd={handleDrag}>
           <div className="flex mt-3 py-3 px-3 gap-3 bg-white rounded-md">
-            <TaskColumn status="todo" tasks={todoTasks} />
-            <TaskColumn status="progress" tasks={inProgressTasks} />
-            <TaskColumn status="review" tasks={underReviewTasks} />
-            <TaskColumn status="finished" tasks={finishedTasks} />
+            {isLoading ? (
+              <>
+                {[1, 2, 3, 4].map((_, idx) => (
+                  <TaskColumnSkeleton
+                    status={
+                      ["todo", "progress", "review", "finished"][
+                        idx
+                      ] as Task["status"]
+                    }
+                    key={idx}
+                  />
+                ))}
+              </>
+            ) : (
+              <>
+                <TaskColumn status="todo" tasks={todoTasks} />
+                <TaskColumn status="progress" tasks={inProgressTasks} />
+                <TaskColumn status="review" tasks={underReviewTasks} />
+                <TaskColumn status="finished" tasks={finishedTasks} />
+              </>
+            )}
           </div>
         </DragDropContext>
       </div>
