@@ -15,6 +15,7 @@ import AnalyticsSVG from "../../public/analytics.svg";
 import Image from "next/image";
 import SolidPlusSVG from "../../public/solidplus.svg";
 import useAuth from "@/lib/hooks/useAuth";
+import { toast } from "sonner";
 
 const Sidebar: React.FC = () => {
   const router = useRouter();
@@ -23,8 +24,12 @@ const Sidebar: React.FC = () => {
   const user = useAuth();
 
   const handleLogout = () => {
+    toast("Logging out...", {
+      duration: 1000,
+    });
     localStorage.removeItem("token");
     router.push("/login");
+    toast.success("Logged out successfully.");
   };
 
   return (

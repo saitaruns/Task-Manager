@@ -19,7 +19,7 @@ import * as z from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
-import { Eye, EyeOff } from "lucide-react";
+import { Eye, EyeOff, Loader } from "lucide-react";
 
 interface LoginFormInput {
   email: string;
@@ -138,8 +138,12 @@ const Login: React.FC = () => {
               type="submit"
               disabled={!isValid || mutation.isPending || mutation.isSuccess}
               variant="shad"
+              className="flex items-center gap-2"
             >
               Login
+              {(mutation.isPending || mutation.isSuccess) && (
+                <Loader size={18} className="animate-spin" />
+              )}
             </Button>
           </form>
           <div className="text-sm mx-auto">

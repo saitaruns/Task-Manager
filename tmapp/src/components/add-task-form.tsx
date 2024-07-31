@@ -402,8 +402,12 @@ const AddTaskForm = ({
           type="submit"
           disabled={mutation.isPending || mutation.isSuccess}
           variant="shadsecondary"
+          className="flex items-center gap-2"
         >
           {isUpdate ? "Update Task" : "Create Task"}
+          {(mutation.isPending || mutation.isSuccess) && (
+            <Loader size={18} className="animate-spin" />
+          )}
         </Button>
       </form>
     </Form>

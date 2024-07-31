@@ -81,14 +81,17 @@ const deleteTask = async (id: string) => {
 const DeleteButton = ({ id }: { id: string }) => {
   const queryClient = useQueryClient();
 
+  let toastId: string | number = "";
   const mutation = useMutation({
     mutationFn: (id: string) => {
       return deleteTask(id);
     },
     onSuccess: () => {
+      toast.dismiss(toastId);
       toast.success("Task deleted successfully");
     },
     onMutate: () => {
+      toastId = toast.loading("Deleting task...");
       const deletedTask = (queryClient.getQueryData(["tasks"]) as Task[]).find(
         (task: Task) => task._id === id
       );
@@ -108,6 +111,7 @@ const DeleteButton = ({ id }: { id: string }) => {
           }
         );
       });
+      toast.dismiss(toastId);
       toast.error("Failed to delete task. Please try again later.");
     },
   });
