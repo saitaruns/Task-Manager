@@ -1,11 +1,10 @@
-import React, { useContext } from "react";
+import React from "react";
 import HeaderCard from "./header-card";
 import OpinionSVG from "../../public/undraw_opinion.svg";
 import PostSVG from "../../public/undraw_posts.svg";
 import ShareSVG from "../../public/undraw_share_link.svg";
 import Link from "next/link";
 import { CircleHelp } from "lucide-react";
-import { AuthContext } from "./auth-context";
 import useAuth from "@/lib/hooks/useAuth";
 
 const Header: React.FC = () => {
