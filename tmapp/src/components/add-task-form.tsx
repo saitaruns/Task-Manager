@@ -9,7 +9,7 @@ import {
   Plus,
   Trash,
 } from "lucide-react";
-import { Task, title } from "./task-column";
+import { Task } from "./task-column";
 import { useFieldArray, useForm, useFormContext } from "react-hook-form";
 import { Button } from "./ui/button";
 import { Input } from "./ui/input";
@@ -31,6 +31,7 @@ import { toast } from "sonner";
 import FileDrop from "./dropzone";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
+import { title } from "@/lib/constants";
 
 const statusOptions = ["todo", "progress", "review", "finished"];
 const priorityOptions = ["Low", "Medium", "Urgent"];
@@ -77,7 +78,7 @@ const AddTaskForm = ({
   status,
   task,
 }: {
-  status?: "todo" | "progress" | "review" | "finished";
+  status?: Task["status"];
   task?: Task;
 }) => {
   const form = useForm<TaskFormProps>({
@@ -244,7 +245,7 @@ const AddTaskForm = ({
               <FormControl>
                 <Input
                   {...field}
-                  className="px-0 h-20 text-4xl border-none shadow-none focus-visible:ring-0"
+                  className="placeholder:text-[#CCCCCC] px-0 h-20 text-4xl border-none shadow-none focus-visible:ring-0"
                   placeholder="Title"
                 />
               </FormControl>

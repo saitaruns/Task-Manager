@@ -21,7 +21,7 @@ import { useForm, SubmitHandler } from "react-hook-form";
 import { toast } from "sonner";
 import { z } from "zod";
 
-interface IFormInput {
+interface SignupFormInput {
   name: string;
   email: string;
   password: string;
@@ -40,7 +40,7 @@ const formSchema = z.object({
 });
 
 const Signup: React.FC = () => {
-  const form = useForm<IFormInput>({
+  const form = useForm<SignupFormInput>({
     resolver: zodResolver(formSchema),
   });
 
@@ -48,13 +48,13 @@ const Signup: React.FC = () => {
 
   const {
     handleSubmit,
-    formState: { errors, isValid },
+    formState: { isValid },
   } = form;
 
   const router = useRouter();
 
   const mutation = useMutation({
-    mutationFn: (formData: IFormInput) => {
+    mutationFn: (formData: SignupFormInput) => {
       return instance.post("/auth/register", formData);
     },
     onSuccess: (data) => {
@@ -67,15 +67,15 @@ const Signup: React.FC = () => {
     },
   });
 
-  const onSubmit: SubmitHandler<IFormInput> = (data) => {
+  const onSubmit: SubmitHandler<SignupFormInput> = (data) => {
     mutation.mutate(data);
   };
 
   const handleEye = () => setShowPassword(!showPassword);
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gradient-to-b from-[#FFFFFF] from-0% to-[#AFA3FF] to-100%">
-      <div className=" bg-gradient-to-b from-[#F7F7F7] from-0% to-[#F0F0F0] to-100% border-[#CECECE] py-14 px-12 rounded-lg w-full max-w-lg">
+    <div className="min-h-screen flex items-center justify-center bg-auth">
+      <div className="bg-auth-foreground border-[#CECECE] py-14 px-12 rounded-lg w-full max-w-lg">
         <h1 className="text-4xl font-semibold mb-6 text-center">
           Welcome to <span className="text-[#4534AC]">Workflo</span>!
         </h1>

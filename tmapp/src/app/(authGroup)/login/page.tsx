@@ -21,7 +21,7 @@ import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { Eye, EyeOff } from "lucide-react";
 
-interface IFormInput {
+interface LoginFormInput {
   email: string;
   password: string;
 }
@@ -36,7 +36,7 @@ const formSchema = z.object({
 });
 
 const Login: React.FC = () => {
-  const form = useForm<IFormInput>({
+  const form = useForm<LoginFormInput>({
     resolver: zodResolver(formSchema),
   });
 
@@ -67,15 +67,15 @@ const Login: React.FC = () => {
     },
   });
 
-  const onSubmit: SubmitHandler<IFormInput> = (data) => {
+  const onSubmit: SubmitHandler<LoginFormInput> = (data) => {
     mutation.mutate(data);
   };
 
   const handleEye = () => setShowPassword(!showPassword);
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gradient-to-b from-[#FFFFFF] from-0% to-[#AFA3FF] to-100%">
-      <div className="flex flex-col gap-7 bg-gradient-to-b from-[#F7F7F7] from-0% to-[#F0F0F0] to-100% py-14 px-12 rounded-xl border border-[#CECECE] w-full max-w-lg">
+    <div className="min-h-screen flex items-center justify-center bg-auth">
+      <div className="flex flex-col gap-7 bg-auth-foreground py-14 px-12 rounded-xl border border-[#CECECE] w-full max-w-lg">
         <h1 className="text-4xl font-semibold text-center">
           Welcome to <span className="text-[#4534AC]">Workflo</span>!
         </h1>

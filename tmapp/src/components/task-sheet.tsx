@@ -23,7 +23,7 @@ const TaskSheet = ({
   task,
 }: {
   children: React.ReactNode;
-  status?: "todo" | "progress" | "review" | "finished";
+  status?: Task["status"];
   task?: Task;
 }) => {
   return (
@@ -54,7 +54,7 @@ const TaskSheet = ({
             <Button
               variant="secondary"
               onClick={() => {}}
-              className="text-[#797979] font-[400] gap-2"
+              className="font-[400] gap-2"
             >
               <span>Share</span>
               <Image src={ShareSVG} alt="Share" width={18} height={18} />
@@ -62,7 +62,7 @@ const TaskSheet = ({
             <Button
               variant="secondary"
               onClick={() => {}}
-              className="text-[#797979] font-[400] gap-2"
+              className="font-[400] gap-2"
             >
               <span>Favorite</span>
               <Image src={StarSVG} alt="Favorite" width={18} height={18} />

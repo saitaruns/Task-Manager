@@ -5,7 +5,8 @@ import { Plus } from "lucide-react";
 import TaskSheet from "./task-sheet";
 import ThreeLines from "../../public/threelines.svg";
 import Image from "next/image";
-import { Draggable, Droppable } from "react-beautiful-dnd";
+import { Droppable } from "react-beautiful-dnd";
+import { title } from "@/lib/constants";
 
 export interface Task {
   _id: string;
@@ -19,18 +20,9 @@ export interface Task {
 }
 
 export interface TaskColumnProps {
-  status: "todo" | "progress" | "review" | "finished";
+  status: Task["status"];
   tasks?: Task[];
 }
-
-export const title: {
-  [key: string]: string;
-} = {
-  todo: "To Do",
-  progress: "In Progress",
-  review: "Under Review",
-  finished: "Finished",
-};
 
 const TaskColumn: React.FC<TaskColumnProps> = ({ status, tasks }) => {
   return (

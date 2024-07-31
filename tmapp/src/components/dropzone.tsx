@@ -1,3 +1,4 @@
+import { cn } from "@/lib/utils";
 import React, { useCallback } from "react";
 import { useDropzone } from "react-dropzone";
 import { toast } from "sonner";
@@ -41,7 +42,14 @@ export default function FileDrop({
   return (
     <div {...getRootProps()}>
       <input {...getInputProps()} />
-      <div className="text-[#C0BDBD] text-[14px] font-[400] cursor-pointer mt-2 mb-3">
+      <div
+        className={cn(
+          "text-[#C0BDBD] text-[14px] font-[400] cursor-pointer mb-2 p-2 border-2 border-transparent",
+          {
+            "border-2 border-dashed  border-[#C0BDBD]": isDragActive,
+          }
+        )}
+      >
         {isDragActive ? (
           <p>Drop the files here ...</p>
         ) : (

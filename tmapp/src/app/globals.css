@@ -68,3 +68,12 @@
     @apply font-inter;
   }
 }
+
+@layer components {
+  .bg-auth {
+    @apply bg-gradient-to-b from-[#FFFFFF] from-0% to-[#AFA3FF] to-100%;
+  }
+  .bg-auth-foreground {
+    @apply bg-gradient-to-b from-[#F7F7F7] from-0% to-[#F0F0F0] to-100%;
+  }
+}
