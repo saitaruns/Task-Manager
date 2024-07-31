@@ -16,6 +16,7 @@ import Image from "next/image";
 import SolidPlusSVG from "../../public/solidplus.svg";
 import useAuth from "@/lib/hooks/useAuth";
 import { toast } from "sonner";
+import ProPic from "../../public/profilepic.svg";
 
 const Sidebar: React.FC = () => {
   const router = useRouter();
@@ -35,7 +36,7 @@ const Sidebar: React.FC = () => {
   return (
     <div className="w-4/12 min-h-screen p-4 flex flex-col gap-5 border-r bg-white">
       <div className="flex items-center gap-2">
-        <div className="bg-gray-600 size-8 rounded-md"></div>
+        <Image src={ProPic} alt="Profile Picture" width={30} height={30} />
         <span className="">{user?.isFetched ? user?.data?.name : ""}</span>
       </div>
       <div className="flex justify-between">
