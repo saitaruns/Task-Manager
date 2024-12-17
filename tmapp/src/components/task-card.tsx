@@ -58,11 +58,13 @@ const TaskCard: React.FC<
             {priority}
           </div>
           <div className="flex flex-col gap-3">
-            <div className="text-sm mt-2 flex gap-2 items-center text-[#606060] font-semibold">
-              <Clock size={20} className="inline" />
-              {format(new Date(deadline), "yyyy-MM-dd")}
+            <div className="text-sm mt-2 flex gap-2 items-center text-[#606060]">
+              {format(new Date(deadline),
+                "dd MMM yyyy"
+              )}
             </div>
-            <div className="text-sm font-[500] text-[#797979]">
+            <div className="text-xs font-[500] flex gap-1 items-center  text-[#797979]">
+              <Clock size={12} className="inline" />
               {formatDistanceToNowStrict(new Date(updatedAt), {
                 addSuffix: true,
               })}

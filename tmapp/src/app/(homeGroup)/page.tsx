@@ -6,7 +6,6 @@ import TaskColumn, {
   TaskColumnSkeleton,
 } from "../../components/task-column";
 import Header from "@/components/header";
-import Sidebar from "@/components/sidebar";
 import MenuBar from "@/components/menubar";
 import {
   keepPreviousData,
@@ -15,9 +14,8 @@ import {
   useQueryClient,
 } from "@tanstack/react-query";
 import instance from "@/lib/request";
-import { DragDropContext, Droppable } from "react-beautiful-dnd";
+import { DragDropContext } from "react-beautiful-dnd";
 import { toast } from "sonner";
-import { Loader } from "@/components/loader";
 
 const fetchTodoList: () => Promise<Task[]> = async () => {
   const response = await instance.get("/tasks");
@@ -100,37 +98,34 @@ const Dashboard: React.FC = () => {
   };
 
   return (
-    <div className="flex bg-[#F7F7F7] pr-4">
-      <Sidebar />
-      <div className="flex-grow p-3">
-        <Header />
-        <MenuBar query={query} setQuery={setQuery} />
-        <DragDropContext onDragEnd={handleDrag}>
-          <div className="flex mt-3 py-3 px-3 gap-3 bg-white rounded-md">
-            {isLoading ? (
-              <>
-                {[1, 2, 3, 4].map((_, idx) => (
-                  <TaskColumnSkeleton
-                    status={
-                      ["todo", "progress", "review", "finished"][
-                        idx
-                      ] as Task["status"]
-                    }
-                    key={idx}
-                  />
-                ))}
-              </>
-            ) : (
-              <>
-                <TaskColumn status="todo" tasks={todoTasks} />
-                <TaskColumn status="progress" tasks={inProgressTasks} />
-                <TaskColumn status="review" tasks={underReviewTasks} />
-                <TaskColumn status="finished" tasks={finishedTasks} />
-              </>
-            )}
-          </div>
-        </DragDropContext>
-      </div>
+    <div className="flex-grow bg-[#F7F7F7] p-3">
+      <Header />
+      <MenuBar query={query} setQuery={setQuery} />
+      <DragDropContext onDragEnd={handleDrag}>
+        <div className="flex mt-3 py-3 px-3 gap-3 bg-white rounded-md">
+          {isLoading ? (
+            <>
+              {[1, 2, 3, 4].map((_, idx) => (
+                <TaskColumnSkeleton
+                  status={
+                    ["todo", "progress", "review", "finished"][
+                    idx
+                    ] as Task["status"]
+                  }
+                  key={idx}
+                />
+              ))}
+            </>
+          ) : (
+            <>
+              <TaskColumn status="todo" tasks={todoTasks} />
+              <TaskColumn status="progress" tasks={inProgressTasks} />
+              <TaskColumn status="review" tasks={underReviewTasks} />
+              <TaskColumn status="finished" tasks={finishedTasks} />
+            </>
+          )}
+        </div>
+      </DragDropContext>
     </div>
   );
 };

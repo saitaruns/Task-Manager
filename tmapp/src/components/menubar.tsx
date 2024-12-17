@@ -29,7 +29,7 @@ const MenuBar = ({
         <Search size={20} className="text-[#797979]" />
       </div>
       <div className="flex gap-1">
-        {[
+        {/* {[
           {
             name: "Calendar View",
             icon: CalendarSVG,
@@ -55,7 +55,7 @@ const MenuBar = ({
             <span>{item.name}</span>
             <Image src={item.icon} alt={item.name} width={22} height={22} />
           </Button>
-        ))}
+        ))} */}
         <TaskSheet>
           <Button variant="shad" className="gap-2">
             <span>Create new</span>
