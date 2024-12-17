@@ -74,7 +74,7 @@ export function AppSidebar({ ...props }: AppSidebarProps) {
 
   return (
     <Sidebar collapsible="icon" {...props}>
-      <SidebarHeader className="mt-8">
+      <SidebarHeader className="">
         <SidebarMenu>
           <SidebarMenuItem>
             <SidebarMenuButton
